@@ -1,0 +1,25 @@
+[mysqld]
+# Basic Settings
+pid-file = /var/run/mysqld/mysqld.pid  # Process ID file location
+socket = /var/run/mysqld/mysqld.sock   # Unix socket for local connections
+port = 3306                            # Default MySQL/MariaDB port
+datadir = /var/lib/mariadb             # Directory where database files are stored
+
+# Network Settings - bind to all interfaces for Docker
+bind-address = 0.0.0.0                 # Allow connections from any IP (required for Docker networking)
+
+# Character Set adapted for Wordpress
+character-set-server = utf8mb4         # Server charset supporting full Unicode (emojis, special chars)
+collation-server = utf8mb4_unicode_ci  # Case-insensitive Unicode collation
+
+# Basic Performance adapted for Wordpress
+max_connections = 100                  # Maximum simultaneous connections (WordPress + visitors)
+max_allowed_packet = 256M              # Maximum packet size (for large file uploads in WordPress)
+
+# MySQL CLI client charset configuration
+[mysql]
+default-character-set = utf8mb4        # Ensures CLI client uses same charset as server
+
+# General client charset configuration (PHP, applications)
+[client]
+default-character-set = utf8mb4        # Ensures all clients (WordPress PHP) use same charset as server

@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  nginx:
+    build: ./requirements/ngix
+    container_name: nginx
+    restart: always
+    ports:
+      - "443:443"
+    volumes:
+      - wordpress_files:/var/www/html
+    env_file:
+      - ../.env
+    networks:
+      - inception
+    depends_on:
+      - wordpress
+    secrets:
+      - DOMAIN_NAME
+
+  mariadb:
+    build: ./requirements/mariadb
+    container_name: mariadb
+    restart: always
+    volumes:
+      - wordpress_db:/var/lib/mysql
+    env_file:
+      - ../.env
+    networks:
+      - inception
+    secrets:
+      - DB_ROOT_PASSWORD
+      - DB_PASSWORD
+      - DB_NAME
+
+  wordpress:
+    build: ./requirements/wordpress
+    container_name: wordpress
+    restart: always
+    volumes:
+      - wordpress_files:/var/www/html
+    env_file:
+      - ../.env
+    networks:
+      - inception
+    depends_on:
+      - mariadb
+    secrets:
+      - DB_PASSWORD
+      - DB_NAME
+      - WP_ADMIN_PASSWORD
+      - WP_USER_PASSWORD
+
+volumes:
+  wordpress_db:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/fcarlucc/data/mariadb
+      o: bind
+  wordpress_files:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/fcarlucc/data/wordpress
+      o: bind
+
+secrets:
+  DB_ROOT_PASSWORD:
+    file: ../../secrets/db_root_pwd.txt
+  DB_PASSWORD:
+    file: ../../secrets/db_pwd.txt
+  DB_NAME:
+    file: ../../secrets/db_name.txt
+  WP_ADMIN_PASSWORD:
+    file: ../../secrets/wp_admin_pwd.txt
+  WP_USER_PASSWORD:
+    file: ../../secrets/wp_user_pwd.txt
+  DOMAIN_NAME:
+    file: ../../secrets/domain_name.txt
+
+networks:
+  inception:
+    driver: bridge
