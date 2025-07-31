@@ -8,7 +8,7 @@ services:
     volumes:
       - wordpress_files:/var/www/html
     env_file:
-      - ../.env
+      - .env
     networks:
       - inception
     depends_on:
@@ -23,7 +23,7 @@ services:
     volumes:
       - wordpress_db:/var/lib/mysql
     env_file:
-      - ../.env
+      - .env
     networks:
       - inception
     secrets:
@@ -38,7 +38,7 @@ services:
     volumes:
       - wordpress_files:/var/www/html
     env_file:
-      - ../.env
+      - .env
     networks:
       - inception
     depends_on:
@@ -65,11 +65,11 @@ volumes:
 
 secrets:
   DB_PASSWORD:
-    file: ../../secrets/db_pwd.txt
+    file: ../secrets/db_pwd.txt
   DB_ROOT_PASSWORD:
-    file: ../../secrets/db_root_pwd.txt
+    file: ../secrets/db_root_pwd.txt
   WP_ADMIN_PASSWORD:
-    file: ../../secrets/wp_admin_pwd.txt
+    file: ../secrets/wp_admin_pwd.txt
 
 networks:
   inception:
