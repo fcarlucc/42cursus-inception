@@ -1,0 +1,76 @@
+services:
+  nginx:
+    build: ./requirements/nginx
+    container_name: nginx
+    restart: always
+    ports:
+      - "443:443"
+    volumes:
+      - wordpress_files:/var/www/html
+    env_file:
+      - .env
+    networks:
+      - inception
+    depends_on:
+      - wordpress
+    secrets:
+      []
+
+  mariadb:
+    build: ./requirements/mariadb
+    container_name: mariadb
+    restart: always
+    volumes:
+      - wordpress_db:/var/lib/mysql
+    env_file:
+      - .env
+    networks:
+      - inception
+    secrets:
+      - DB_ROOT_PASSWORD
+      - DB_PASSWORD
+
+  wordpress:
+    build: ./requirements/wordpress
+    container_name: wordpress
+    restart: always
+    volumes:
+      - wordpress_files:/var/www/html
+    env_file:
+      - .env
+    networks:
+      - inception
+    depends_on:
+      - mariadb
+    secrets:
+      - DB_PASSWORD
+      - WP_ROOT_PASSWORD
+      - WP_USER_PASSWORD
+
+volumes:
+  wordpress_db:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/fcarlucc/data/mariadb
+      o: bind
+  wordpress_files:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/fcarlucc/data/wordpress
+      o: bind
+
+secrets:
+  DB_PASSWORD:
+    file: ../secrets/db_pwd.txt
+  DB_ROOT_PASSWORD:
+    file: ../secrets/db_root_pwd.txt
+  WP_ROOT_PASSWORD:
+    file: ../secrets/wp_root_pwd.txt
+  WP_USER_PASSWORD:
+    file: ../secrets/wp_user_pwd.txt
+
+networks:
+  inception:
+    driver: bridge
